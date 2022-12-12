@@ -1,19 +1,25 @@
 import React, { useState, useEffect } from 'react'
-import axios from 'axios'
 import './Posts.css'
 import { Link } from 'react-router-dom'
+import { getPosts } from '../api/PostAPI'
+import Error from './Error'
 export default function Post () {
-  const [posts, setPost] = useState([])
-
+  const [posts, setPosts] = useState([])
+  const [error, setError] = useState()
   useEffect(() => {
-    axios.get('http://localhost:3001/')
-      .then((res) => {
-        setPost(res.data)
-      })
+    getPosts().then(response => {
+      if (response.error) {
+        setError(response.error)
+      } else {
+        setPosts(response.posts)
+      }
+    })
   }, [])
 
   return (
     <>
+      {error &&
+        <Error error={error.message} />}
       <div className='flex-container'>
         {posts.map(post => (
           <div key={post.id} className='flex-item'>
